@@ -12,6 +12,25 @@ Command line server programm for scheduling emails.
 	* All accumulated items are sent and reset once a week. 
 
 
+##Installation
 
-On a Linux system run by:
+Install some dependencies:
+
+```
+pip install python-dateutil
+```
+
+or
+
+```
+sudo apt-get install python-dateutil
+```
+
+
+##Execution
+
+On a Linux system execute by:
+
+```
 stdbuf -o 0 python main.py / 2>&1 | tee log.txt
+```
