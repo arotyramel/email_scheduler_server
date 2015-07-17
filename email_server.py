@@ -6,7 +6,7 @@ from email.header import decode_header
 import memory
 
 import time
-
+import sys
 from datetime import datetime
 
 try:
@@ -20,7 +20,8 @@ class EmailScheduleServer():
         self.id = "Mail Robot"
         self.admin = admin
         self.shopper = shopper
-        self.memory = memory.Memory(".","email_server")
+        self.datapath = sys.argv[0].rsplit("/",1)[0]
+        self.memory = memory.Memory(self.datapath,"email_server")
         self.eh = EmailHelper()
         self.eh.setLoginData(user, pw)
         self.cart_send = False
@@ -107,7 +108,9 @@ class EmailScheduleServer():
             self.sendShoppingCart()
             self.eh.logout()
 #             break
-            self.memory.save()
+            if not self.memory.save():
+                print "could not save the memory. exiting application"
+                break
             print "--------------------------"
 #             print "waiting for next iteration"
             time.sleep(60)

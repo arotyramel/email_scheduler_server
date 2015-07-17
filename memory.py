@@ -17,13 +17,21 @@ class Memory():
             with open(self.__datapath + os.sep +self.__name+".mem","r") as file:
                 self.__memory =  json.loads(file.read())
                 print("Memory %s successfully loaded"%self.__name)
+                return True
         except Exception,e:
             print("Memory '%s' does not exist. This is normal on first execution. %s",self.__name,str(e))
+            return False
     
     # save dict in file
-    def save(self): 
-        with open(self.__datapath+os.sep+self.__name+".mem","w") as file:
-            file.write(json.dumps(self.__memory,default=self.json_serial))
+    def save(self):
+        try:
+#             print "Saving file to",self.__datapath+os.sep+self.__name+".mem","w"   
+            with open(self.__datapath+os.sep+self.__name+".mem","w") as file:
+                file.write(json.dumps(self.__memory,default=self.json_serial))
+                return True
+        except Exception,e:
+            print("Memory '%s'cannot be saved. %s",self.__name,str(e))
+            return False
 #         print("Memory %s saved successfully"%self.__name)
     
     # returns a list of the keys of the dict, return [] if no keys
@@ -72,7 +80,8 @@ if __name__=="__main__":
     datapath = "."
     name = "memory_bob"
     mem = Memory(datapath,name)
-    
+    print mem.save()
+    exit()
     print "1-dict from memory is ", mem.getKeys()
     mem.insertData("straw2", 15) 
     mem.insertData("banana", []) 
