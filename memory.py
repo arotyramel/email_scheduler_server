@@ -24,7 +24,7 @@ class Memory():
     def save(self): 
         with open(self.__datapath+os.sep+self.__name+".mem","w") as file:
             file.write(json.dumps(self.__memory,default=self.json_serial))
-        print("Memory %s saved successfully"%self.__name)
+#         print("Memory %s saved successfully"%self.__name)
     
     # returns a list of the keys of the dict, return [] if no keys
     def getKeys(self):

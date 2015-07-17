@@ -99,18 +99,18 @@ class EmailScheduleServer():
         print "email schedule server started"
         while True:
             print datetime.now()
-            print "checking for new jobs"
+#             print "checking for new jobs"
             self.eh.login()
             self.checkForNewJobs()
-            print "executing jobs"
+#             print "executing jobs"
             self.executeAllJobs()
             self.sendShoppingCart()
             self.eh.logout()
 #             break
             self.memory.save()
-            print "waiting for next iteration"
-            time.sleep(60)
             print "--------------------------"
+#             print "waiting for next iteration"
+            time.sleep(60)
         self.close()
             
                 
@@ -236,6 +236,11 @@ class EmailScheduleServer():
         weekday = datetime.today().weekday()
         if weekday == 4 and self.cart_send is False and time.strftime("%H")=="12":
             self.cart_send = True
+            if self.memory.hasKey("**shoppingCart"):
+                shoppingCart+=(self.memory.getData("**shoppingCart"))
+            else:
+                print "There is nothing in your shopping cart"
+                return
             msg="<html><body>"
             msg+= "<br>".join([x.encode("utf-8") for x in shoppingCart])
             msg+="</body></html>"         
