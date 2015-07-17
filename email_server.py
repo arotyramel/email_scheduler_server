@@ -21,6 +21,7 @@ class EmailScheduleServer():
         self.admin = admin
         self.shopper = shopper
         self.datapath = sys.argv[0].rsplit("/",1)[0]
+        print "Datapath set to:",self.datapath
         self.memory = memory.Memory(self.datapath,"email_server")
         self.eh = EmailHelper()
         self.eh.setLoginData(user, pw)
