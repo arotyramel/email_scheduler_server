@@ -34,3 +34,9 @@ On a Linux system execute by:
 ```
 stdbuf -o 0 python main.py / 2>&1 | tee log.txt
 ```
+
+Alternativly use the launcher file:
+
+```
+bash ./launcher.bash &
+```
