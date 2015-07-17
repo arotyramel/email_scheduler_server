@@ -29,14 +29,15 @@ sudo apt-get install python-dateutil
 
 ##Execution
 
-On a Linux system execute by:
-
-```
-stdbuf -o 0 python main.py / 2>&1 | tee log.txt
-```
-
-Alternativly use the launcher file:
+On a Linux system run the server with the launcher file in main directory:
 
 ```
 bash ./launcher.bash &
+```
+
+## Autostart
+Add this line to your "/etc/rc.local", replacing the path with the correct path to your the launcher.
+
+```
+sudo ${USER} -c "/home/pi/email_scheduler_server/launcher.bash" &
 ```
