@@ -100,20 +100,24 @@ class EmailScheduleServer():
     def start(self):
         print "email schedule server started"
         while True:
-            print datetime.now()
-#             print "checking for new jobs"
-            self.eh.login()
-            self.checkForNewJobs()
-#             print "executing jobs"
-            self.executeAllJobs()
-            self.sendShoppingCart()
-            self.eh.logout()
-#             break
-            if not self.memory.save():
-                print "could not save the memory. exiting application"
-                break
-            print "--------------------------"
-#             print "waiting for next iteration"
+            try:
+                print datetime.now()
+    #             print "checking for new jobs"
+                self.eh.login()
+                self.checkForNewJobs()
+    #             print "executing jobs"
+                self.executeAllJobs()
+                self.sendShoppingCart()
+                self.eh.logout()
+    #             break
+                if not self.memory.save():
+                    print "could not save the memory. exiting application"
+                    break
+                print "--------------------------"
+    #             print "waiting for next iteration"
+            except Exception,e:
+                print e
+                
             time.sleep(60)
         self.close()
             
