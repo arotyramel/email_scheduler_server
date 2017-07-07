@@ -39,7 +39,7 @@ class EmailHelper():
         
     def isAddressValid(self,receiver):
         if not re.match(r"[^@]+@[^@]+\.[^@]+",receiver):
-            print "EMail address not valid"
+            print ("EMail address not valid")
             return False
         else:
 #             print "Email address is valid"
@@ -51,7 +51,7 @@ class EmailHelper():
         msg=MIMEMultipart()
         sender = formataddr((str(Header(unicode(sender), 'utf-8')), self.__userid))
         msg['From']=sender
-        print sender
+        print (sender)
         msg['To']=receiver
         msg['Date']=email.Utils.formatdate(localtime=True)
         msg['Subject']=subject
@@ -61,7 +61,7 @@ class EmailHelper():
         
         
         if not self.smtp:    
-            print "not logged in smtp"
+            print ("not logged in smtp")
             return   
         self.smtpServer.sendmail(self.__userid, receiver, msg.as_string())
 
@@ -79,7 +79,7 @@ class EmailHelper():
             fp.close()
             #take only name and not full path for attachment name
             part.add_header('Content-Disposition', 'attachment', filename=filename)
-            print "attaching file :",filename
+            print ("attaching file :",filename)
             msg.attach(part)
         return msg
 
@@ -97,15 +97,19 @@ class EmailHelper():
                 if self.busy <= 0:
                     return
             time.sleep(0.5)
-        print "timeout reached while waiting for finishing the task"
+        print ("timeout reached while waiting for finishing the task")
     
     def login(self):
-        self.loginImap()
-        self.loginSmtp()
+        if self.loginImap() and self.loginSmtp():
+            return True
+        else:
+            return False
 
     def logout(self):
-        self.logoutImap()
-        self.logoutSmtp()
+        if self.logoutImap() and self.logoutSmtp():
+            return True 
+        else:
+            return False
     
     def loginSmtp(self):
         try:
@@ -114,18 +118,21 @@ class EmailHelper():
                 self.smtpServer.ehlo()
                 self.smtpServer.starttls()
                 self.smtpServer.ehlo()
-                self.smtpServer.login(self.__userid.split("@")[0] ,self.__password)
+                self.smtpServer.login(self.__userid ,self.__password)
                 self.smtp = True
-        except Exception,e:
-            print e
+            return True
+        except Exception as e:
+            print (e)
+            return False
             
     def logoutSmtp(self):
         try:
             if self.smtp:
                 self.smtpServer.quit()
                 self.smtp = False
+            return True
         except:
-            pass
+            return False
         
     def logoutImap(self):
         try:
@@ -133,8 +140,9 @@ class EmailHelper():
                 self.imapServer.close()
                 self.imapServer.logout()
                 self.imap = False
+            return True
         except:
-            pass
+            return False
   
     def loginImap(self):
         try:
@@ -142,11 +150,13 @@ class EmailHelper():
                 self.imapServer = imaplib.IMAP4_SSL('imap.gmail.com')
                 self.imapServer.login(self.__userid, self.__password)
                 self.imap = True
-        except Exception, e:
-            print e
+            return True
+        except Exception as e:
+            print (e)
+            return False
     
     def fetchEmails(self,evaluate=True):
-        print "fetching emails"
+        print ("fetching emails")
         self.imapServer.select("inbox")
         result, data1 = self.imapServer.search( None, 'ALL')#'UNSEEN'
         messages = []
@@ -175,7 +185,7 @@ class EmailHelper():
             (sender_name, varFrom) = resp
             [message,attachment] = self.extractMessageBody(msg)
             date = msg['Date']
-            print "date",date
+            print ("date",date)
             return [varFrom,varSubject,message,date,attachment,sender_name]
         return None
 

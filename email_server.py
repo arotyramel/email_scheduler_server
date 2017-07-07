@@ -12,7 +12,7 @@ from datetime import datetime
 try:
     from dateutil.relativedelta import relativedelta
 except:
-    print "pip install python-dateutil"
+    print ("pip install python-dateutil")
     exit()
 
 class EmailScheduleServer():
@@ -21,7 +21,7 @@ class EmailScheduleServer():
         self.admin = admin
         self.shopper = shopper
         self.datapath = sys.argv[0].rsplit("/",1)[0]
-        print "Datapath set to:",self.datapath
+        print ("Datapath set to:",self.datapath)
         self.memory = memory.Memory(self.datapath,"email_server")
         self.eh = EmailHelper()
         self.eh.setLoginData(user, pw)
@@ -59,16 +59,14 @@ class EmailScheduleServer():
                         self.eh.sendMail(msg[5],data[0],data[1]["subject"],msg[2])
                         self.memory.removeData(key)                   
                     else:
-                        print "unknown email received"
-                        print "transfering to admin"
+                        print ("unknown email received")
+                        print ("transfering to admin")
                         self.transferMessageToAdmin(msg)
-                        print "msg",msg
+                        print ("msg",msg)
                 self.eh.deleteMailByDate(msg[3])
-            except Exception,e:
-                print "evaluating new email job failed!"
-                print e
-
-
+            except Exception as e:
+                print ("evaluating new email job failed!")
+                print (e)
 
     def executeAllJobs(self):
         for key in self.memory.getKeys():
@@ -79,31 +77,33 @@ class EmailScheduleServer():
 
                 sender = self.memory.getData(key)[2]
                 content = self.memory.getData(key)[1]
-                print content["timeToSend"]-time.time()
+                print (content["timeToSend"]-time.time())
                 if time.time() > content["timeToSend"] and content["timeToSend"] > 0:
 #                     print "attachment",content["attachment"]
-                    print "sending emails"
+                    print ("sending emails")
                     self.eh.sendMail(sender,content["receiver"],content["subject"],content["message"],content["attachment"])
                     if content["interval"] < 0:
                         content["timeToSend"] = -1
                         if content["keyword"] == "":
-                            print "deleting memory entry"
+                            print ("deleting memory entry")
                             self.memory.removeData(key)
                     else:
                         content["timeToSend"]+=content["interval"]
 #                
-            except Exception,e:
-                print "Email could not be parsed correctly. Skipping"
-                print e
+            except Exception as e:
+                print ("Email could not be parsed correctly. Skipping")
+                print (e)
                  
     
     def start(self):
-        print "email schedule server started"
+        print ("email schedule server started")
         while True:
             try:
-                print datetime.now()
+                print (datetime.now())
     #             print "checking for new jobs"
-                self.eh.login()
+                if not self.eh.login():
+                    time.sleep(5)
+                    continue
                 self.checkForNewJobs()
     #             print "executing jobs"
                 self.executeAllJobs()
@@ -111,12 +111,12 @@ class EmailScheduleServer():
                 self.eh.logout()
     #             break
                 if not self.memory.save():
-                    print "could not save the memory. exiting application"
+                    print ("could not save the memory. exiting application")
                     break
-                print "--------------------------"
+                print ("--------------------------")
     #             print "waiting for next iteration"
-            except Exception,e:
-                print e
+            except Exception as e:
+                print (e)
                 
             time.sleep(60)
         self.close()
@@ -129,7 +129,7 @@ class EmailScheduleServer():
         i = [int(x) for x in i]
         while len(i) < 6:
             i.append(0)
-        print "get delta from ",i
+        print ("get delta from ",i)
         delta = relativedelta(years=i[0],months=i[1],days=i[2],hours=i[3],minutes=i[4],seconds=i[5])
         now = datetime.now()
         return ((now+delta)-now).total_seconds() #stupid python -.-
@@ -153,13 +153,13 @@ class EmailScheduleServer():
         return None
     
     def extractDataFromBody(self,body):
-        print "extracting info from body"
+        print ("extracting info from body")
         tag = ["**","/**"]
         items = ["receiver","subject","message","keyword","interval","timeToSend"]
 #         print "body before cut",body
         body = self.find_between(body, "---", "---")
         content = {}
-        print "after cut ", body
+        print ("after cut ", body)
         for i in range(len(items)):
             content[items[i]] = self.find_between(body, tag[0]+items[i]+":", tag[1])
             
@@ -179,12 +179,12 @@ class EmailScheduleServer():
         return content
         
     def maketime(self,t):
-        print t
+        print (t)
         t = [int(x) for x in t]
         while len(t) < 9:
             t.append(0)
-        print "requested time ",time.mktime(t)+time.timezone
-        print "now",time.time()
+        print ("requested time ",time.mktime(t)+time.timezone)
+        print ("now",time.time())
         return time.mktime(t)+time.timezone
         
     def find_between(self, s, first, last ):
@@ -197,7 +197,7 @@ class EmailScheduleServer():
     
     
     def sendConfirmation(self,id):
-        print "sending confirmation"
+        print ("sending confirmation")
         sender = self.memory.getData(id)[0]
         msg = "Your request has been added to the email schedule server. You will get your answer, when it is available."
         self.eh.sendMail(self.id,sender,"New scheduled job has been added",msg)
@@ -226,7 +226,7 @@ class EmailScheduleServer():
 
     def listSavedEmails(self):
         for key in self.memory.getKeys():
-            print self.memory.getData(key)
+            print (self.memory.getData(key))
     
     def updateShoppingCart(self,sender,body):
         shoppingCart = body.split("\n")
@@ -247,7 +247,7 @@ class EmailScheduleServer():
             if self.memory.hasKey("**shoppingCart"):
                 shoppingCart+=(self.memory.getData("**shoppingCart"))
             else:
-                print "There is nothing in your shopping cart"
+                print ("There is nothing in your shopping cart")
                 return
             msg="<html><body>"
             msg+= "<br>".join([x.encode("utf-8") for x in shoppingCart])
@@ -271,5 +271,5 @@ if __name__=='__main__':
     ess    = EmailScheduleServer(USER,PASSWORD,ADMIN,SHOPPER)
     ess.start()
     ess.close()
-    print "email schedule server closed"
+    print ("email schedule server closed")
 

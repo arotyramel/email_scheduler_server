@@ -9,4 +9,4 @@ if __name__=='__main__':
     ess    = EmailScheduleServer(USER,PASSWORD,ADMIN)
     ess.start()
     ess.close()
-    print "email schedule server closed"
+    print ("email schedule server closed")
